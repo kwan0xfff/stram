@@ -1,2 +1,3 @@
 # stram
-Simple trajectory modeling
+Simple Trajectory Modeling
+
