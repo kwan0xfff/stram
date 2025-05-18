@@ -34,27 +34,70 @@ State derivative(const State& state) {
 }
 
 
-int main() {
+class VectorOutput {
+public:
+    virtual ~VectorOutput() = default;
+    virtual void writeHeader(std::ostream& os) = 0;
+    virtual void writeVector(std::ostream& os, double t, const Vector3d& v) = 0;
+};
+
+
+class HumanOutput : public VectorOutput {
+public:
+    void writeHeader(std::ostream& os) override {
+        // No header for human-readable format
+    }
+
+    void writeVector(std::ostream& os, double t, const Vector3d& v) override {
+        os << std::fixed << std::setprecision(3);
+        os << "t = " << t << ", v = ("
+           << v.x() << ", " << v.y() << ", " << v.z() << ")\n";
+    }
+};
+
+
+class CSVOutput : public VectorOutput {
+public:
+    void writeHeader(std::ostream& os) override {
+        os << "time, posx, posy, posz\n";
+    }
+
+    void writeVector(std::ostream& os, double t, const Vector3d& v) override {
+        os << std::fixed << std::setprecision(3);
+        os << t << ", " << v.x() << ", " << v.y() << ", " << v.z() << "\n";
+    }
+};
+
+
+int main(int argc, char* argv[])
+{
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " [human|csv]\n";
+        return 1;
+    }
+
+    std::string mode = argv[1];
+    std::unique_ptr<VectorOutput> output;
+
+    if (mode == "human") {
+        output = std::make_unique<HumanOutput>();
+    } else if (mode == "csv") {
+        output = std::make_unique<CSVOutput>();
+    } else {
+        std::cerr << "Unknown mode: " << mode << "\n";
+        return 1;
+    }
+
+
     State state;
     state << 0.0, 0.0, 0.0,  // Initial position
              0.0, 0.0, 0.0;  // Initial velocity
-    int fmtcode = 2;
+
+    output->writeHeader(std::cout);
 
     for (double t = 0; t <= total_time; t += dt) {
-        switch(fmtcode) {
-            default:
-            case 1:
-                std::cout << "t = " << t << "s, pos = (" << state(0) << ", " << state(1) << ", " << state(2) << ")" << std::endl;
-                break;
-            case 2:
-                std::cout << std::setw(8) << std::fixed << std::setprecision(3);
-                std::cout << t;
-                for (int i=0; i<3; ++i) {
-                    std::cout << ", " << state(i);
-                }
-                std::cout << std::endl;
-                break;
-        }
+
+        output->writeVector(std::cout, t, state.segment<3>(0));
 
         State dstate = derivative(state);
         state += dt * dstate;
