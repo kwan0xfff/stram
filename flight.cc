@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <Eigen/Dense>
 
 constexpr double g = 9.81;          // Gravity (m/s^2)
@@ -32,14 +33,28 @@ State derivative(const State& state) {
     return dstate;
 }
 
+
 int main() {
     State state;
     state << 0.0, 0.0, 0.0,  // Initial position
              0.0, 0.0, 0.0;  // Initial velocity
+    int fmtcode = 2;
 
     for (double t = 0; t <= total_time; t += dt) {
-        std::cout << "t = " << t << "s, pos = (" 
-                  << state(0) << ", " << state(1) << ", " << state(2) << ")\n";
+        switch(fmtcode) {
+            default:
+            case 1:
+                std::cout << "t = " << t << "s, pos = (" << state(0) << ", " << state(1) << ", " << state(2) << ")" << std::endl;
+                break;
+            case 2:
+                std::cout << std::setw(8) << std::fixed << std::setprecision(3);
+                std::cout << t;
+                for (int i=0; i<3; ++i) {
+                    std::cout << ", " << state(i);
+                }
+                std::cout << std::endl;
+                break;
+        }
 
         State dstate = derivative(state);
         state += dt * dstate;
