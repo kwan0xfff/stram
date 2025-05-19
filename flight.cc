@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <Eigen/Dense>
 
+#include "vectoroutput.hh"
+
 constexpr double g = 9.81;          // Gravity (m/s^2)
 constexpr double dt = 0.01;         // Time step (s)
 constexpr double total_time = 10.0; // Total simulation time (s)
@@ -34,6 +36,7 @@ State derivative(const State& state) {
 }
 
 
+#if 0
 class VectorOutput {
 public:
     virtual ~VectorOutput() = default;
@@ -68,6 +71,7 @@ public:
     }
 };
 
+#endif
 
 int main(int argc, char* argv[])
 {
