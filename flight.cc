@@ -36,43 +36,6 @@ State derivative(const State& state) {
 }
 
 
-#if 0
-class VectorOutput {
-public:
-    virtual ~VectorOutput() = default;
-    virtual void writeHeader(std::ostream& os) = 0;
-    virtual void writeVector(std::ostream& os, double t, const Vector3d& v) = 0;
-};
-
-
-class HumanOutput : public VectorOutput {
-public:
-    void writeHeader(std::ostream& os) override {
-        // No header for human-readable format
-    }
-
-    void writeVector(std::ostream& os, double t, const Vector3d& v) override {
-        os << std::fixed << std::setprecision(3);
-        os << "t = " << t << ", v = ("
-           << v.x() << ", " << v.y() << ", " << v.z() << ")\n";
-    }
-};
-
-
-class CSVOutput : public VectorOutput {
-public:
-    void writeHeader(std::ostream& os) override {
-        os << "time, posx, posy, posz\n";
-    }
-
-    void writeVector(std::ostream& os, double t, const Vector3d& v) override {
-        os << std::fixed << std::setprecision(3);
-        os << t << ", " << v.x() << ", " << v.y() << ", " << v.z() << "\n";
-    }
-};
-
-#endif
-
 int main(int argc, char* argv[])
 {
     if (argc < 2) {
@@ -96,15 +59,22 @@ int main(int argc, char* argv[])
     State state;
     state << 0.0, 0.0, 0.0,  // Initial position
              0.0, 0.0, 0.0;  // Initial velocity
+    int msgnum = 0;
+    int msgcycle = 50;
 
     output->writeHeader(std::cout);
 
     for (double t = 0; t <= total_time; t += dt) {
 
-        output->writeVector(std::cout, t, state.segment<3>(0));
+        if (msgnum == 0) {
+            output->writeVector(std::cout, t, state.segment<3>(0));
+        }
 
         State dstate = derivative(state);
         state += dt * dstate;
+
+        msgnum++;
+        if (msgnum >= msgcycle) msgnum = 0;
     }
 
     return 0;
