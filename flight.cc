@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <Eigen/Dense>
 
-#include "vectoroutput.hh"
+#include "writers.hh"
 
 constexpr double g = 9.81;          // Gravity (m/s^2)
 constexpr double dt = 0.01;         // Time step (s)

@@ -4,7 +4,7 @@
 
 using Vector3d = Eigen::Vector3d;
 
-#include "vectoroutput.hh"
+#include "writers.hh"
 
 void
 HumanOutput :: writeHeader(std::ostream& os) {

@@ -10,7 +10,7 @@ CXXFLAGS := -std=c++17 -O2 -Wall -I$(EIGEN_PATH)
 
 # Target and sources
 TARGET   := flight
-SRC      := flight.cc vectoroutput.cc
+SRC      := flight.cc writers.cc
 OBJ      := $(SRC:.cc=.o)
 
 # Build target
@@ -22,8 +22,8 @@ $(TARGET): $(OBJ)
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-vectoroutput.o : vectoroutput.hh
-flight.o : vectoroutput.hh
+writers.o : writers.hh
+flight.o : writers.hh
 
 # Clean rule
 clean:
