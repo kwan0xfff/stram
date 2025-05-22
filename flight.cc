@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
     for (double t = 0; t <= total_time; t += dt) {
 
         if (msgnum == 0) {
-            output->writeVector(std::cout, t, state.segment<3>(0));
+            output->writeState(std::cout, t, state.segment<3>(0));
         }
 
         State dstate = derivative(state);
